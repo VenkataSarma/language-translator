@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Translator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Language Translator</h1>
+    </header>
+    <main>
+        <div class="translator">
+            <textarea id="inputText" placeholder="Enter text in English"></textarea>
+            <button id="translateButton">Translate</button>
+            <select id="targetLanguage">
+                <option value="hi">Hindi</option>
+                <option value="bn">Bengali</option>
+                <!-- Add more regional languages as needed -->
+            </select>
+            <div id="outputText"></div>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+                                           css
+
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+header {
+    text-align: center;
+    background-color: #333;
+    color: white;
+    padding: 20px 0;
+}
+
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.translator {
+    text-align: center;
+}
+
+textarea {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#outputText {
+    margin-top: 20px;
+}
+
+
+
+
+
+
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+                        js
+
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const inputText = document.getElementById("inputText");
+    const translateButton = document.getElementById("translateButton");
+    const targetLanguage = document.getElementById("targetLanguage");
+    const outputText = document.getElementById("outputText");
+
+    translateButton.addEventListener("click", () => {
+        const text = inputText.value;
+        const language = targetLanguage.value;
+
+        if (text.trim() === "") {
+            alert("Please enter text to translate.");
+            return;
+        }
+
+        fetchTranslation(text, language)
+            .then((translation) => {
+                outputText.textContent = translation;
+            })
+            .catch((error) => {
+                console.error("Translation error:", error);
+                outputText.textContent = "Translation failed.";
+            });
+    });
+
+    async function fetchTranslation(text, targetLanguage) {
+        const apiKey = "YOUR_GOOGLE_TRANSLATE_API_KEY";
+        const apiUrl = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                q: text,
+                target: targetLanguage,
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const data = await response.json();
+
+        if (data && data.data && data.data.translations && data.data.translations[0]) {
+            return data.data.translations[0].translatedText;
+        } else {
+            throw new Error("Translation error");
+        }
+    }
+});
